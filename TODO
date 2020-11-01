@@ -1,0 +1,8 @@
+* link to lines, identifier definitions, within and across files
+* adapt to viewport width/mobile
+* foldable nav bar
+* better heuristic for ignoring prefix whitespace in block comments
+* try without code-expansion/code-contraction but a 'code autofollow' when scrolling the comments
+* make markdown-it plugins and options configurable from lib use
+* make command-line use configurable (ie `require(solcco/cli)`)
+

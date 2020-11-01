@@ -1,0 +1,490 @@
+<!doctype html>
+<html>
+  <head>
+<link href="./prism.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+<style>
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.level {
+  display: flex;
+  flex-direction: row;
+  line-height: 1.4;
+  align-items: baseline;
+  position: relative;
+}
+.left, .right {
+  //border: 1px solid red;
+}
+.left-background {
+  background: #f5f5ff;
+  border-right: 1px solid #e5e5ee;
+  width: 33em;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: -1px;
+  z-index: -1;
+  padding-left: 4em;
+}
+.left {
+  padding-left: 4rem;
+  width: 33em;
+  align-items: stretch;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  text-align:right;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+.lineComment {
+  max-width: 60%;
+  font-size:0.9em;
+  text-align: right;
+  background: white;
+  display: inline-flex;
+  flex-direction: column;
+  //margin-right: calc(-1px);
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  border: 1px solid #e5e5ee;
+  border-right: none;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  margin-bottom: 2px;
+  margin-left: 1rem;
+}
+
+.blockComment {
+  margin-right: 3rem;
+  text-align: justify;
+}
+// fixme not working like I want
+.blockCommont:not(:first-child) {
+  margin-top: 1em;
+}
+.left p {
+  margin: 0;
+}
+.left .blockComment p {
+  margin-bottom: 1em;
+}
+
+.right {
+  position: relative;
+  top: 0px;
+  width: 50%;
+  //padding-left: 0.5rem;
+  display: flex;
+} 
+
+.right, .lines {
+  line-height: 2.2;
+}
+
+.focusing {
+  background: rgb(254 255 227);
+}
+
+.right:hover {
+  //border: 1px solid blue;
+}
+.right code {
+}
+
+.codewrap {
+  display: flex;
+  flex-direction: row;
+  transition: transform 300ms ease-in-out;
+}
+
+.focuser {
+  align-self: stretch;
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  color: white;
+  z-index: 1000;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3.2rem;
+  height: 100%;
+}
+
+.focus-icon {
+  //line-height: 0.85;
+  font-size: 1.5rem;
+  width: 1em;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.focus-icon:before, .focus-icon:after {
+  position: absolute;
+  text-align: center;
+  display: block;
+  left: 0;
+  width: 1em;
+  visibility: hidden;
+  color: #797979;
+}
+
+.focus-icon:before {
+  content:"↡";
+  top: -1.55em;
+  pointer-events: none;
+}
+
+
+.focus-icon:after {
+  content:"↟";
+  bottom: -1.45em;
+  pointer-events: none;
+}
+
+.focuser:hover,
+.focusing .focuser {
+  border-top: 1px dashed #797979;
+  border-bottom: 1px dashed #797979;
+  cursor: pointer;
+}
+
+.focuser:hover .focus-icon:before, .focuser:hover .focus-icon:after,
+.focusing .focus-icon:before, .focusing .focus-icon:after {
+  visibility: visible;
+}
+
+.bodyFocus .focuser {
+  pointer-events: none;
+}
+
+
+pre {
+  margin: 0;
+}
+
+
+.right {
+  position: relative;
+}
+.lines {
+  width: content;
+  flex-shrink: 0;
+  margin-right: 0;
+  color: #797979;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 1em;
+}
+.lines pre {
+  width: 3.5em;
+  pointer-events: none;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+}
+
+nav {
+  width: 20em;
+  flex-shrink: 0;
+  padding-top: 4em;
+  padding-right: 2em;
+  background: hsl(240 47% 17% / 1);
+  position: sticky;
+  top: 0px;
+  font-size: 0.9em;
+  height: 100vh;
+  font-family: 'Lato', sans-serif;
+  background: #f5f5ff;
+  overflow-y: auto;
+}
+
+nav a {
+  color: hsl(240 82% 98% / 1);
+  color: black;
+  display: block;
+  text-decoration: none;
+  line-height: 1;
+  padding-left: 6rem;
+}
+
+nav a:hover {
+  background: white;
+}
+
+nav a.highlight {
+  background: white;
+}
+
+.toc-file {
+  font-family: monospace;
+  font-size: 1.3em;
+  padding-top: 0.7em;
+  padding-bottom: 0.6em;
+  border-top: 1px solid #e5e5ee;
+  border-bottom: 1px solid #e5e5ee;
+}
+
+* + .toc-file {
+  margin-top: 2em;
+}
+
+.toc-h1 {
+  font-size: 1.2em;
+  font-weight: 600;
+  padding-top: 0.6em;
+  padding-bottom: 0.55em;
+}
+
+.toc-h2 {
+  font-size: 1em;
+  padding-left: 6.5rem;
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
+}
+
+.toc-h3 + .toc-h2 {
+  margin-top: .4em;
+}
+
+.toc-h3 + .toc-h1,
+.toc-h2 + .toc-h1 {
+  margin-top: .4em;
+}
+
+.toc-h3 {
+  font-size: 0.8em;
+  padding-left: 6.5rem;
+  padding-top: 0.4em;
+  padding-botom: 0.6em;
+}
+
+.filebreak {
+  font-family: monospace;
+  width: 33rem;
+  font-size: 1.6em;
+  padding-bottom: 0.6em;
+  padding-top: 0.6em;
+  text-align: left;
+}
+</style>
+<script>
+
+/* Bounds of DOM element, including margin */
+let bounds = (el,wsy) => {
+  const rect = el.getBoundingClientRect();
+  const style = getComputedStyle(el);
+  return {
+    top: wsy + rect.top - parseInt(style.marginTop),
+    bottom: wsy + rect.bottom + parseInt(style.marginBottom)
+  };
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+
+  /* For future reference. The current TOC highlight fails when you scroll up into a no-headings zone. Then the highlighted heading is the one below the bottom of the viewport; it should be the one above the top of the viewport. A more complete decision tree for future implementation:
+  * have an array of all heading elements, and they know their position in the array
+  * have a pointer to "lowest heading above viewport lower edge ("the fold").
+  * keep set of visible elements
+  * when an element comes in or out of the set, run:
+  lowestAboveFold = i
+  point = lower above fold
+  for entry in entries
+    if entry.out
+      if entry.too_low
+        if point below or is entry
+          point = entry.prev
+        else ()
+      else (entry.too_high)
+        if nobody_visible () [???]
+        else () [???]
+    else (entry.in)
+      if point above or is entry
+        point = entry
+  */
+
+  /* Keep roughly track of currently viewed section, highlight corresponding toc in nav */
+  const visibleHeadings = new Set();
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries)
+      visibleHeadings[entry.isIntersecting ? 'add' : 'delete'](entry.target);
+    }, {threshold:0});
+    const headingsSelector = Array.from({length: 2 }, (_,i) => `h${i+1}`).join(', ');
+    const headings = document.querySelectorAll(headingsSelector);
+
+    for (const heading of headings) observer.observe(heading);
+
+    let curHeading = null;
+    window.addEventListener('scroll', e => {
+      let minBelow = [Infinity,null];
+      for (const heading of visibleHeadings) {
+        const b = heading.getBoundingClientRect().bottom;
+        if (b < minBelow[0]) minBelow = [b,heading];
+      }
+      if (minBelow[1] !== curHeading) {
+        if (minBelow[1] && curHeading) {
+          document.querySelector(`a[href="#${curHeading.id}"]`).classList.remove('highlight');
+        }
+        if (minBelow[1]) {
+          curHeading = minBelow[1];
+          document.querySelector(`a[href="#${curHeading.id}"]`).classList.add('highlight');
+        }
+      }
+    });
+
+  /* Initialize cache _translate to 0 */
+  for (const focuser of document.querySelectorAll('.codewrap')) {
+    focuser._translate = 0;
+  }
+
+  /* Loop through all codewraps. Treat codewraps before t (which is a codewrap)
+  * in reverse order. Stack codewraps above and below t. */
+  const focus = (t) => {
+    const wsy = window.scrollY; // cache value for performance, big difference in chrome
+    let isBefore = true;
+    const tBounds = bounds(t,wsy);
+    let prevBottom = tBounds.bottom - t._translate;
+    let prevTop = tBounds.top - t._translate;
+    t.style.transform = "translate(0px,0px)";
+    t._translate = 0;
+    let befores = [];
+    for (const cur of document.querySelectorAll(".codewrap")) {
+      if (cur === t) {
+        isBefore = false;
+      } else if (isBefore) {
+        befores.push(cur);
+      } else {
+        const cBounds = bounds(cur,wsy);
+        const _translate = prevBottom - cBounds.top;
+        cur._translate = cur._translate + _translate;
+        prevBottom = prevBottom + (cBounds.bottom - cBounds.top);
+        cur.style.transform = `translate(0px,${cur._translate}px)`;
+      }
+    }
+
+    let cur;
+    while ((cur = befores.pop())) {
+      const cBounds = bounds(cur,wsy);
+      const _translate = prevTop - cBounds.bottom;
+      cur._translate = cur._translate + _translate;
+      prevTop = prevTop - (cBounds.bottom - cBounds.top);
+      cur.style.transform = `translate(0px,${cur._translate}px)`;
+    }
+
+  };
+
+  /* Stop focusing */
+  let currentFocuser;
+
+  const defocus = () => {
+    currentFocuser.parentNode.classList.remove("focusing");
+    document.body.classList.remove("bodyFocus");
+    currentFocuser = undefined;
+    for (const t of document.querySelectorAll(".codewrap")) {
+      t.style.transform = "translate(0px,0px)";
+      t._translate = 0;
+    }
+  };
+
+  /* Defocus when clicking anywhere and currently in focus */
+  document.body.addEventListener('click', e => {
+    if (currentFocuser) defocus();
+  });
+
+  /* Focus when clicking a focuser. Disabled when in focus because of a
+  *   `pointer-events:none` in the CSS.
+  */
+  for (const focuser of document.querySelectorAll('.focuser')) {
+    focuser.addEventListener('click', e => {
+      currentFocuser = e.currentTarget;
+      currentFocuser.parentNode.classList.add("focusing");
+      document.body.classList.add("bodyFocus");
+      focus(e.currentTarget.parentNode.querySelector('.codewrap'));
+      e.stopPropagation();
+    });
+  }
+});
+</script>
+</head>
+  <body>
+    <nav>
+      <a href="#hello.sol" class="toc-file">Hello.sol</a>
+      <a href="#hello.sol-hello%2C-world." class="toc-h1">Hello, World.</a>
+    </nav>
+    <main>
+  <div class="level">
+      <div class="left-background"></div>
+      <div id="hello.sol" class="left filebreak"></div>
+  </div>
+    <div class="level">
+      <div class="left-background"></div>
+      <div class="left">
+      </div>
+      <code class="right solidity">
+        <div class="codewrap">
+          <code class="lines"><pre>2
+3
+4</pre></code>
+          <pre><span class="token comment">/* Compiler version must be greater than or equal to 0.6.10 and less than 0.7.0 */</span><br><span class="token keyword">pragma</span> <span class="token keyword">solidity</span> <span class="token operator">^</span><span class="token version number">0.6.10</span><span class="token punctuation">;</span><br></pre>
+        </div>
+        <div class="focuser">
+          <div class="focus-icon"><!--⥮--></div>
+          <div class="warning-overlay"></div>
+        </div>
+      </code>
+    </div>
+    <div class="level">
+      <div class="left-background"></div>
+      <div class="left">
+        <div class="blockComment"><h1 id="hello.sol-hello%2C-world.">Hello, World.</h1>
+<p>The canonical hello world example</p>
+</div>
+      </div>
+      <code class="right solidity">
+        <div class="codewrap">
+          <code class="lines"><pre>7</pre></code>
+          <pre><span class="token keyword">contract</span> <span class="token class-name">HelloWorld</span> <span class="token punctuation">{</span></pre>
+        </div>
+        <div class="focuser">
+          <div class="focus-icon"><!--⥮--></div>
+          <div class="warning-overlay"></div>
+        </div>
+      </code>
+    </div>
+    <div class="level">
+      <div class="left-background"></div>
+      <div class="left">
+        <div class="lineComment"><p>make accessible</p>
+</div>
+      </div>
+      <code class="right solidity">
+        <div class="codewrap">
+          <code class="lines"><pre>9
+10</pre></code>
+          <pre>    <span class="token builtin">string</span> <span class="token keyword">public</span> greet <span class="token operator">=</span> <span class="token string">"Hello World!"</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span></pre>
+        </div>
+        <div class="focuser">
+          <div class="focus-icon"><!--⥮--></div>
+          <div class="warning-overlay"></div>
+        </div>
+      </code>
+    </div>
+  </main>
+  </body>
+</html>

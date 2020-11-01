@@ -1,0 +1,38 @@
+{
+  "name": "solcco",
+  "version": "1.0.0",
+  "description": "Documentation generator for Solidity with a literary bent.",
+  "main": "solcco.js",
+  "dependencies": {
+    "@gerhobbelt/markdown-it-anchor": "^6.0.0-23",
+    "debug": "^4.2.0",
+    "handlebars": "^4.7.6",
+    "markdown-it": "^12.0.2",
+    "markdown-it-sub": "^1.0.0",
+    "markdown-it-sup": "^1.0.0",
+    "meow": "^8.0.0",
+    "prismjs": "^1.22.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adhusson/solcco.git"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "solcco": "./solcco-cli.js"
+  },
+  "keywords": [
+    "solidity",
+    "documentation",
+    "generator",
+    "literate",
+    "docs",
+    "docco"
+  ],
+  "author": "Adrien Husson",
+  "license": "MIT",
+  "homepage": "https://github.com/adhusson/solcco"
+}
