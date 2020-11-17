@@ -344,16 +344,16 @@ body:not(.bodyFocusing) .level:hover .hover-background {
   text-align: justify;
 }
 
-.blockComment *:not(li) {
+.blockComment *:not(li,code) {
   margin-top: 0px;
   margin-bottom: 1.44em;
 }
 
-.blockComment *:last-child:not(li) {
+.blockComment *:last-child:not(li,code) {
   margin-bottom: 0.72em;
 }
 
-.blockComment *:first-child:not(li) {
+.blockComment *:first-child:not(li,code) {
   margin-top: 0.72em;
 }
 
@@ -581,6 +581,10 @@ nav a.highlight {
   padding-left: 6.5rem;
   padding-top: 0.4em;
   padding-botom: 0.6em;
+}
+
+a {
+  color: black;
 }
 
 .filebreak {

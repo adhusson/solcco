@@ -89,10 +89,10 @@ const runner = (config, input, extra) => {
 
     const flush = (type,force) => {
       debug(`Flushing ${type} at lineno ${_lineno}, force: ${!!force}`);
-      if (_buffer !== '' || force) {
+      //if (_buffer !== '' || force) {
         const numbuflines = Math.max(0,_buffer.split('\n').length - 1);
         results.push({type, content: _buffer, lineno: _lineno-numbuflines});
-      }
+      //}
       _buffer = '';
     };
 
@@ -156,9 +156,11 @@ const runner = (config, input, extra) => {
                 } else if (flag == "clear") {
                   // useful for inserting clearing lines
                   debug("| (+clear+ flag))");
+                  flush("code");
                   skip(/[^]*?\n/);
                   bufferString("");
-                  flush("code",true);
+                  flush("clear");
+                  //flush("code",true);
                 } else {
                   throw parseError(`unknown solcco line comment flag: ${flag}`);
                 }
@@ -263,19 +265,28 @@ const runner = (config, input, extra) => {
 
     for (const result of results) {
       let last = packedResults[packedResults.length - 1];
-      const c = result.type === "code" ? result.content : trimPreNL(result.content);
-      if (last.code.length > 0 && result.type !== "code") {
+      const c = result.type === "code" ? result.content : trimPreNL(result.content || "");
+      if (result.type === "code") {
+        if (last.closed) {
+          last = freshPack();
+          packedResults.push(last);
+        }
+        if (last.code.length === 0) {
+          last.lineno = result.lineno;
+        }
+        last["code"].push(result.content);
+      }
+      if (result.type === "clear") {
+        last.closed = true;
+      }
+      if (["lineComment","blockComment"].includes(result.type)) {
+        if (last.code.length > 0) {
+          last.closed = true;
+        }
         last = freshPack();
         packedResults.push(last);
+        last[result.type].push(trimPreNL(result.content));
       }
-      //if I ignore all newlines and just "push new code", I need to manage correct multiblocks of code in this area
-      // otherwise I just eat up \n without knowing whether I'll get more code later
-      // and removing 'last \n' works if I had a \n at the end... wait when does it NOT work actually?
-      // maybe here I can just add "&& last.code.length == 0"
-      if (result.type === "code") {
-        last.lineno = result.lineno;
-      }
-      last[result.type].push(c);
     }
 
     /* Generate spans of lines (the left line gutter in the code panel) */
@@ -291,16 +302,9 @@ const runner = (config, input, extra) => {
       pack.blockComment = md.render(pack.blockComment.join("\n\n"));
       pack.lineComment = md.render(pack.lineComment.join("\n\n"));
       let joined = pack.code.join("");
-      // Remove start and end \n
-      //while (joined.match(/^\n/)) {
-        //joined = joined.slice(1);
-      //}
-      //while (joined.match(/\n$/)) {
-        //joined = joined.slice(0,-1);
-      //}
-      //if (joined.match(/\n$/)) {
-        //joined = joined.slice(0,-1);
-      //}
+      if (joined.match(/\n$/)) {
+        joined = joined.slice(0,-1);
+      }
       //Skip only-spaces
       if (!joined.match(/^\s*$/)) {
         pack.lines = makeLines(pack.lineno,joined);
