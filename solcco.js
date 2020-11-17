@@ -268,6 +268,10 @@ const runner = (config, input, extra) => {
         last = freshPack();
         packedResults.push(last);
       }
+      //if I ignore all newlines and just "push new code", I need to manage correct multiblocks of code in this area
+      // otherwise I just eat up \n without knowing whether I'll get more code later
+      // and removing 'last \n' works if I had a \n at the end... wait when does it NOT work actually?
+      // maybe here I can just add "&& last.code.length == 0"
       if (result.type === "code") {
         last.lineno = result.lineno;
       }
@@ -288,12 +292,15 @@ const runner = (config, input, extra) => {
       pack.lineComment = md.render(pack.lineComment.join("\n\n"));
       let joined = pack.code.join("");
       // Remove start and end \n
-      while (joined.match(/^\n/)) {
-        joined = joined.slice(1);
-      }
-      while (joined.match(/\n$/)) {
-        joined = joined.slice(0,-1);
-      }
+      //while (joined.match(/^\n/)) {
+        //joined = joined.slice(1);
+      //}
+      //while (joined.match(/\n$/)) {
+        //joined = joined.slice(0,-1);
+      //}
+      //if (joined.match(/\n$/)) {
+        //joined = joined.slice(0,-1);
+      //}
       //Skip only-spaces
       if (!joined.match(/^\s*$/)) {
         pack.lines = makeLines(pack.lineno,joined);
@@ -302,6 +309,9 @@ const runner = (config, input, extra) => {
           prism.languages.solidity,
           "solidity"
           ).split('\n').join('<br>');
+      } else {
+        pack.lines = '';
+        pack.code = '';
       }
     }
 
