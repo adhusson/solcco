@@ -27,6 +27,9 @@ const runner = (config, input, extra) => {
 
   const isString = s => typeof s === 'string' || s instanceof String;
 
+  let code = "";
+
+
   if (isString(input)) {
     if (isString(extra)) { // input is file title, extra is content
       input = [{file: input, content: extra}];
@@ -246,7 +249,9 @@ const runner = (config, input, extra) => {
       }
     })
     .use(require('markdown-it-sup'))
-    .use(require('markdown-it-sub'));
+    .use(require('markdown-it-sub'))
+    .use(require('@iktakahiro/markdown-it-katex'));
+
 
     /* Remove extra \n in comments */
 
@@ -308,6 +313,7 @@ const runner = (config, input, extra) => {
       //Skip only-spaces
       if (!joined.match(/^\s*$/)) {
         pack.lines = makeLines(pack.lineno,joined);
+        pack.rawCode = joined;
         pack.code = prism.highlight(
           joined,
           prism.languages.solidity,
@@ -316,6 +322,7 @@ const runner = (config, input, extra) => {
       } else {
         pack.lines = '';
         pack.code = '';
+        pack.rawCode = '';
       }
     }
 
@@ -328,13 +335,32 @@ const runner = (config, input, extra) => {
   debug("packedFiles, %s",util.inspect(packedFiles,{depth:null}));
 
   /* Compile with handlebars */
-  const template = fs.readFileSync(path.join(__dirname,'solcco.html'), "utf8");
-  const html = handlebars.compile(template)({toc, packedFiles, level: config.level});
-  return html;
+  if (config.code) {
+    const template = `{{#each toc}}
+{{title}}
+{{/each}}
+
+{{#each packedFiles}}
+================
+{{file}}
+================
+{{#each packedResults}}
+{{{rawCode}}}
+
+{{/each}}
+{{/each}}`;
+    const code = handlebars.compile(template)({toc,packedFiles, level: 0});
+    return code;
+  } else {
+    const template = fs.readFileSync(path.join(__dirname,'solcco.html'), "utf8");
+    const html = handlebars.compile(template)({toc, packedFiles, level: config.level});
+    return html;
+  }
 }
 
 module.exports = (_config={}) => {
   const config = {
+    code: !!_config.code,
     level: Number.isInteger(_config.level) ? _config.level : 2,
     run(input) { return runner(this,input); }
   }

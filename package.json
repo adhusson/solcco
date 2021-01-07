@@ -5,6 +5,7 @@
   "main": "solcco.js",
   "dependencies": {
     "@gerhobbelt/markdown-it-anchor": "^6.0.0-23",
+    "@iktakahiro/markdown-it-katex": "^4.0.1",
     "debug": "^4.2.0",
     "handlebars": "^4.7.6",
     "markdown-it": "^12.0.2",

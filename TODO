@@ -5,4 +5,4 @@
 * try without code-expansion/code-contraction but a 'code autofollow' when scrolling the comments
 * make markdown-it plugins and options configurable from lib use
 * make command-line use configurable (ie `require(solcco/cli)`)
-
+* check https://github.com/prettier-solidity/solidity-comments-extractor and see if I should use it instead of my adhoc parser
