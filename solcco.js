@@ -346,10 +346,13 @@ const runner = (config, input, extra) => {
 ================
 {{#each packedResults}}
 {{{rawCode}}}
-
 {{/each}}
 {{/each}}`;
-    const code = handlebars.compile(template)({toc,packedFiles, level: 0});
+    const newPackedFiles = packedFiles.map(({fileSlug,file,packedResults}) => {
+      const newPackedResults = packedResults.filter(({rawCode}) => { return rawCode !== ''; });
+      return {fileSlug,file,packedResults:newPackedResults};
+    });
+    const code = handlebars.compile(template)({toc,packedFiles: newPackedFiles, level: 0});
     return code;
   } else {
     const template = fs.readFileSync(path.join(__dirname,'solcco.html'), "utf8");
