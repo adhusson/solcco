@@ -5,6 +5,16 @@ const handlebars = require("handlebars");
 const prism = require("prismjs");
 const markdownIt = require("markdown-it");
 
+/* Load code highlighters and make language map */
+const loadLanguages = require("prismjs/components/");
+loadLanguages(["solidity"]);
+loadLanguages(["javascript"]);
+
+const languages = {
+  ".js": {name: "javascript", object: prism.languages.javascript},
+  ".sol": {name: "solidity", object: prism.languages.solidity}
+};
+
 const runner = (config, input, extra) => {
 
 
@@ -44,6 +54,13 @@ const runner = (config, input, extra) => {
     /* Add file to TOC */
     const fileSlug = slugify(file);
     toc.push({title: file, slug: fileSlug, tag: 'file'});
+
+    /* Configure highlight language */
+    const language = languages[path.extname(file)];
+    if (!language) {
+      throw `Unknown file extension: ${path.extname(file)}`;
+    }
+
 
     /* Parser routines */
 
@@ -231,9 +248,6 @@ const runner = (config, input, extra) => {
 
     /* Load code highlighter, markdown parser */
 
-    const loadLanguages = require("prismjs/components/");
-    loadLanguages(["solidity"]);
-
     const md = markdownIt({
       typographer: true,
       breaks: false,
@@ -316,8 +330,8 @@ const runner = (config, input, extra) => {
         pack.rawCode = joined;
         pack.code = prism.highlight(
           joined,
-          prism.languages.solidity,
-          "solidity"
+          language.object,
+          language.name
           ).split('\n').join('<br>');
       } else {
         pack.lines = '';
