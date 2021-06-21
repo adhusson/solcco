@@ -541,6 +541,10 @@ nav a.highlight {
   background: white;
 }
 
+nav a.toc-file:hover {
+  background: black;
+}
+
 .toc-file {
   font-family: monospace;
   font-size: 1.3em;
@@ -748,6 +752,19 @@ window.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
     });
   }
+
+  /* Avoid horizontal scrolling when clicking on internal anchors */
+  for (const anchor of document.querySelectorAll("a[href^='#']")) {
+    anchor.addEventListener('click', e => {
+      e.preventDefault();
+      const href = anchor.getAttribute("href").slice(1);
+      const target = document.querySelector(`[id='${href}']`);
+console.log(target);
+//target.scrollIntoView();
+      const destY = target.getBoundingClientRect().top + window.scrollY
+      window.scroll(window.scrollX, destY);
+    });
+  };
 });
 </script>
 </head>
