@@ -262,6 +262,11 @@ h3 {
   padding-top: 3rem;
 }
 
+.level.scrollHighlighted {
+  background: rgb(150 159 228 / 48%);
+  border-right: 10px solid #515ba27a;
+}
+
 .titleLevel .left-background  {
   padding-top: 2em;
   //border-bottom: 4px solid #e5e5ee;
@@ -754,15 +759,20 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   /* Avoid horizontal scrolling when clicking on internal anchors */
+  let scrollHighlighted = null;
   for (const anchor of document.querySelectorAll("a[href^='#']")) {
     anchor.addEventListener('click', e => {
       e.preventDefault();
       const href = anchor.getAttribute("href").slice(1);
       const target = document.querySelector(`[id='${href}']`);
-console.log(target);
-//target.scrollIntoView();
-      const destY = target.getBoundingClientRect().top + window.scrollY
-      window.scroll(window.scrollX, destY);
+      if (scrollHighlighted) {
+        scrollHighlighted.classList.remove('scrollHighlighted');
+      }
+      target.scrollIntoView({behavior: "auto", block: "center", inline: "end"});
+      scrollHighlighted = target.closest('.level');
+      if (scrollHighlighted) {
+        scrollHighlighted.classList.add('scrollHighlighted');
+      }
     });
   };
 });
