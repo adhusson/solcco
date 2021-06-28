@@ -760,18 +760,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
   /* Avoid horizontal scrolling when clicking on internal anchors */
   let scrollHighlighted = null;
+
+  const doScroll = target => target.scrollIntoView({behavior: "auto", block: "start", inline: "end"});
+
   for (const anchor of document.querySelectorAll("a[href^='#']")) {
     anchor.addEventListener('click', e => {
       e.preventDefault();
-      const href = anchor.getAttribute("href").slice(1);
-      const target = document.querySelector(`[id='${href}']`);
+      history.pushState(null, null, anchor.getAttribute('href'));
+      // Must use [id=] syntax instead of # syntax to escape forward slash in anchor name.
+      const target = document.querySelector(`[id='${anchor.getAttribute("href").slice(1)}']`);
       if (scrollHighlighted) {
         scrollHighlighted.classList.remove('scrollHighlighted');
       }
-      target.scrollIntoView({behavior: "auto", block: "center", inline: "end"});
       scrollHighlighted = target.closest('.level');
       if (scrollHighlighted) {
+        doScroll(scrollHighlighted);
         scrollHighlighted.classList.add('scrollHighlighted');
+      } else {
+        doScroll(target);
       }
     });
   };

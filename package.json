@@ -1,6 +1,6 @@
 {
   "name": "solcco",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Documentation generator for Solidity with a literary bent.",
   "main": "solcco.js",
   "dependencies": {
