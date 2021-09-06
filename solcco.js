@@ -71,7 +71,7 @@ const runner = (config, input, extra) => {
     /* Error objects */
     const parseError = (msg) => {
       const line = rest.match(/.*/)[0];
-      return new Error(`Parse error, line ${_lineno}: ${msg}\n${line}`);
+      return new Error(`Parse error, file: ${file}, line ${_lineno}: ${msg}\n${line}`);
     };
 
     const parse = (pattern, {move = false, buffer = false, error = false}) => {
@@ -165,19 +165,19 @@ const runner = (config, input, extra) => {
           } else if (lookAhead(raw`${hws}//`)) {
             // comment line on its own line.
             debug("| standalone line comment");
-            if (skip(raw`${hws}//${hws}SPDX-License-Identifier:.*\n`)) {
+            if (skip(raw`${hws}//${hws}SPDX-License-Identifier:.*\r?\n`)) {
               debug("| (excluded (SPDX))");
-            } else if (lookAhead(raw`${hws}//\+.*\+.*\n`)) {
+            } else if (lookAhead(raw`${hws}//\+.*\+.*\r?\n`)) {
               debug("| (+...+ flag))");
               const flag = skip(raw`${hws}//\+(.*?)\+`)[1];
                 if (flag == "ignore") {
                   debug("| (+ignore+ flag))");
-                  skip(raw`.*\n`);
+                  skip(raw`.*\r?\n`);
                 } else if (flag == "clear") {
                   // useful for inserting clearing lines
                   debug("| (+clear+ flag))");
                   flush("code");
-                  skip(/[^]*?\n/);
+                  skip(/[^]*?\r?\n/);
                   bufferString("");
                   flush("clear");
                   //flush("code",true);
@@ -191,7 +191,7 @@ const runner = (config, input, extra) => {
               flush("code");
               skip(raw`${hws}//${hws}`);
               buffer(/[^]*?$/m); // m flag interprets $ as endofline
-              skip('\n');
+              skip('\r?\n');
               flush("lineComment");
             }
           } else if (lookAhead(/\s/)) {
@@ -211,9 +211,9 @@ const runner = (config, input, extra) => {
             buffer(raw`/\*[^]*?\*/`);
           } else if (lookAhead(raw`//`)) {
             debug("| excluded line comment, going to base");
-            buffer(raw`//[^]*?\n`);
+            buffer(raw`//[^]*?\r?\n`);
             mode = "base";
-          } else if (lookAhead(/\n/)) {
+          } else if (lookAhead(/\r?\n/)) {
             debug("| newline, going to base");
             buffer(/[^]/);
             mode = "base";
@@ -232,12 +232,12 @@ const runner = (config, input, extra) => {
           skip(raw`${singlehws}{0,${modeParam}}`);
           if (tryBuffer(raw`.*?(?=\*/)`)) {
             debug("| last block comment line");
-            skip(raw`\*/(${hws}\n)?`);
+            skip(raw`\*/(${hws}\r?\n)?`);
             flush("blockComment");
             mode = "base";
           } else {
             debug("| ongoing block comment line");
-            buffer(raw`.*\n`);
+            buffer(raw`.*\r?\n`);
           }
         }
       } else {
@@ -267,10 +267,10 @@ const runner = (config, input, extra) => {
     .use(require('@iktakahiro/markdown-it-katex'));
 
 
-    /* Remove extra \n in comments */
+    /* Remove extra \r?\n in comments */
 
     const trimPreNL = (s) => {
-      return s.replace(/^\n*/, "");
+      return s.replace(/^\r?\n*/, "");
     };
 
     /* Turn linear parsed blocks into structured content */
@@ -332,7 +332,7 @@ const runner = (config, input, extra) => {
           joined,
           language.object,
           language.name
-          ).split('\n').join('<br>');
+          ).split('\r?\n').join('<br>');
       } else {
         pack.lines = '';
         pack.code = '';
